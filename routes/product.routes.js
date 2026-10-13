@@ -5,7 +5,8 @@ const {
     getAllProducts,
     getProductById,
     updateProduct,
-    deleteProduct
+    deleteProduct,
+    updateProductAvailability
 } = require("../controllers/product.controller");
 
 const authMiddleware = require("../middleware/auth.middleware");
@@ -25,5 +26,7 @@ router.get("/:id", getProductById);
 router.put("/:id", authMiddleware, updateProduct);
 
 router.delete("/:id", authMiddleware, deleteProduct);
+
+router.patch("/:id/availability",authMiddleware,updateProductAvailability);
 
 module.exports = router;

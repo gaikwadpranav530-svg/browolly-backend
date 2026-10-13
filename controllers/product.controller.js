@@ -1,4 +1,3 @@
-
 const productModel = require("../models/product.model");
 
 // ADD PRODUCT
@@ -9,6 +8,7 @@ module.exports.addProduct = async (req, res) => {
             category,
             hourlyPrice,
             dailyPrice,
+            weeklyPrice,
             productStatus,
             description,
             brand,
@@ -23,6 +23,7 @@ module.exports.addProduct = async (req, res) => {
             category,
             hourlyPrice,
             dailyPrice,
+            weeklyPrice,
             productStatus,
             description,
             brand,
@@ -145,6 +146,49 @@ module.exports.deleteProduct = async (req, res) => {
     } catch (error) {
         res.status(500).json({
             message: "Failed to delete product",
+            error: error.message
+        });
+    }
+};
+
+// UPDATE PRODUCT AVAILABILITY
+module.exports.updateProductAvailability = async (req, res) => {
+    try {
+        const { productStatus } = req.body;
+
+        if (!["available", "unavailable"].includes(productStatus)) {
+            return res.status(400).json({
+                message: "Status must be available or unavailable"
+            });
+        }
+
+        const product = await productModel.findOneAndUpdate(
+            {
+                _id: req.params.id,
+                ownerId: req.userId
+            },
+            {
+                productStatus
+            },
+            {
+                new: true,
+                runValidators: true
+            }
+        );
+
+        if (!product) {
+            return res.status(404).json({
+                message: "Product not found or you are not the owner"
+            });
+        }
+
+        res.status(200).json({
+            message: "Product availability updated successfully",
+            product
+        });
+    } catch (error) {
+        res.status(500).json({
+            message: "Failed to update product availability",
             error: error.message
         });
     }

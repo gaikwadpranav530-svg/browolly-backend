@@ -1,5 +1,3 @@
-
-
 const mongoose = require("mongoose");
 
 const productSchema = new mongoose.Schema(
@@ -36,8 +34,14 @@ const productSchema = new mongoose.Schema(
             required: true
         },
 
+        weeklyPrice: {
+            type: Number,
+            required: true
+        },
+
         productStatus: {
             type: String,
+            enum: ["available", "unavailable"],
             default: "available"
         },
 
