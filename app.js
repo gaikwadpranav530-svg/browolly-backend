@@ -7,12 +7,13 @@ const addFeatureRoutes = require("./routes/addFeature.routes");
 const bookingRoutes = require("./routes/booking.routes");
 const wishlistRoutes = require("./routes/wishlist.routes");
 const contactRoutes = require("./routes/contact.routes");
+const cors = require("cors");
 const dotenv = require("dotenv")
 dotenv.config()
 const app = express();
 
 connectDB();
-
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan("dev"));
