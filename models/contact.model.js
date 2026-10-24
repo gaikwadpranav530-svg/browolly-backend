@@ -14,8 +14,7 @@ const contactSchema = new mongoose.Schema(
         },
 
         address: {
-            type: String,
-            required: true
+            type: String
         },
 
         message: {

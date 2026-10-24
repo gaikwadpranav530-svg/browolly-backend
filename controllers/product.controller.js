@@ -11,6 +11,7 @@ module.exports.addProduct = async (req, res) => {
             weeklyPrice,
             productStatus,
             description,
+            productImages,
             brand,
             model,
             includes,
@@ -26,6 +27,7 @@ module.exports.addProduct = async (req, res) => {
             weeklyPrice,
             productStatus,
             description,
+            productImages,
             brand,
             model,
             includes,
@@ -49,7 +51,9 @@ module.exports.addProduct = async (req, res) => {
 // GET ALL PRODUCTS
 module.exports.getAllProducts = async (req, res) => {
     try {
-        const products = await productModel.find();
+        const products = await productModel
+            .find({ productStatus: "available" })
+            .populate("ownerId", "username");
 
         res.status(200).json({
             message: "Products fetched successfully",
@@ -59,6 +63,24 @@ module.exports.getAllProducts = async (req, res) => {
     } catch (error) {
         res.status(500).json({
             message: "Failed to fetch products",
+            error: error.message
+        });
+    }
+};
+
+module.exports.getMyProducts = async (req, res) => {
+    try {
+        const products = await productModel
+            .find({ ownerId: req.userId })
+            .populate("ownerId", "username");
+
+        res.status(200).json({
+            message: "Your products fetched successfully",
+            products
+        });
+    } catch (error) {
+        res.status(500).json({
+            message: "Failed to fetch your products",
             error: error.message
         });
     }

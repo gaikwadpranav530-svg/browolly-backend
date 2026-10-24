@@ -132,7 +132,10 @@ module.exports.getAllBookings = async (req, res) => {
                 { ownerId: req.userId },
                 { renterId: req.userId }
             ]
-        });
+        })
+            .populate("productId")
+            .populate("ownerId", "username email phone")
+            .populate("renterId", "username email phone");
 
         res.status(200).json({
             message: "Bookings fetched successfully",

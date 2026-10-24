@@ -12,8 +12,20 @@ const dotenv = require("dotenv")
 dotenv.config()
 const app = express();
 
-connectDB();
-app.use(cors());
+const allowedOrigins = (process.env.CORS_ORIGINS || "http://localhost:5173")
+    .split(",")
+    .map((origin) => origin.trim())
+    .filter(Boolean);
+
+app.use(cors({
+    origin(origin, callback) {
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+            return;
+        }
+        callback(new Error(`Origin ${origin} is not allowed by CORS`));
+    }
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan("dev"));
@@ -29,6 +41,19 @@ app.get("/", (req, res) => {
     res.send("Borrowly Backend is running");
 });
 
-app.listen(5000, () => {
-    console.log("Server running on http://localhost:5000");
+app.get("/health", (req, res) => {
+    res.status(200).json({ status: "ok" });
+});
+
+const start = async () => {
+    await connectDB();
+    const port = Number(process.env.PORT) || 5000;
+    app.listen(port, () => {
+        console.log(`Server listening on port ${port}`);
+    });
+};
+
+start().catch((error) => {
+    console.error("Server startup failed:", error);
+    process.exit(1);
 });

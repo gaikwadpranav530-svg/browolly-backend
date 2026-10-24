@@ -4,8 +4,6 @@ const authMiddleware = (req, res, next) => {
     try {
         const authHeader = req.headers.authorization;
 
-        console.log("AUTH HEADER:", authHeader);
-
         if (!authHeader) {
             return res.status(401).json({
                 message: "Authorization header missing"
@@ -16,14 +14,16 @@ const authMiddleware = (req, res, next) => {
             ? authHeader.split(" ")[1]
             : authHeader;
 
-        console.log("TOKEN:", token);
+        if (!process.env.JWT_SECRET) {
+            return res.status(500).json({
+                message: "Authentication is not configured"
+            });
+        }
 
         const decoded = jwt.verify(
             token,
-            "borrowly_secret_key"
+            process.env.JWT_SECRET
         );
-
-        console.log("DECODED:", decoded);
 
         req.userId = decoded.userId;
         req.email = decoded.email;
@@ -32,7 +32,7 @@ const authMiddleware = (req, res, next) => {
         next();
 
     } catch (error) {
-        console.log("JWT ERROR:", error.message);
+        console.error("JWT verification failed:", error.message);
 
         return res.status(401).json({
             message: "Invalid or expired token",

@@ -77,13 +77,17 @@ module.exports.loginUser = async (req, res) => {
         }
 
         // JWT TOKEN
+        if (!process.env.JWT_SECRET) {
+            throw new Error("JWT_SECRET is not configured");
+        }
+
         const token = jwt.sign(
             {
                 userId: db_user._id,
                 email: db_user.email,
                 role: db_user.role
             },
-            "borrowly_secret_key",
+            process.env.JWT_SECRET,
             {
                 expiresIn: "7d"
             }
@@ -140,7 +144,8 @@ module.exports.updateProfile = async (req, res) => {
             username,
             phone,
             bio,
-            about
+            about,
+            location
         } = req.body;
 
         const updatedUser = await userModel.findByIdAndUpdate(
@@ -149,7 +154,8 @@ module.exports.updateProfile = async (req, res) => {
                 username,
                 phone,
                 bio,
-                about
+                about,
+                location
             },
             {
                 new: true,

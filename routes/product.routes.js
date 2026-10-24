@@ -3,6 +3,7 @@ const express = require("express");
 const {
     addProduct,
     getAllProducts,
+    getMyProducts,
     getProductById,
     updateProduct,
     deleteProduct,
@@ -19,6 +20,7 @@ router.post("/", authMiddleware, addProduct);
 
 router.get("/", getAllProducts);
 
+router.get("/mine", authMiddleware, getMyProducts);
 
 router.get("/:id", getProductById);
 
